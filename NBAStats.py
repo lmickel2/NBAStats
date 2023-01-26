@@ -40,4 +40,4 @@ def getUrl(year, player):
 soup = getUrl(year, player)
 #table = soup.findAll("table")
 #print(table)
-#Hello
+#Hello Levi you're so cute

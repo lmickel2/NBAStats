@@ -12,7 +12,7 @@ def getUrlComponents(player):
     components[1] = firstLastName[1][:5] + firstLastName[0][:2]
     return components
 
-#Uses
+#Iterates through urls using components of users name until right url is found
 def getUrl(year, player):
     components = getUrlComponents(player)
     playerName = player.split(" ")

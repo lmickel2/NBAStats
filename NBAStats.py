@@ -1,5 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
+import pandas as pd
 
 year=input("Which NBA season are you interested in?: ")
 player=input("For which player do you want to get stats?: ").lower()
@@ -37,4 +38,6 @@ def getUrl(year, player):
         exit()
 
 soup = getUrl(year, player)
+#table = soup.findAll("table")
+#print(table)
 

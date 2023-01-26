@@ -13,16 +13,16 @@ def getUrlComponents(player):
     return components
 
 #Iterates through urls using components of users name until right url is found
+#Returns website soup
 def getUrl(year, player):
     components = getUrlComponents(player)
     playerName = player.split(" ")
-    url = ""
     try:
         vals = range(4)
         for i in vals:
             num = "0" + str(i)
-            testUrl = "https://www.basketball-reference.com/players/{}/{}{}/gamelog/{}".format(components[0], components[1], num, year)
-            response = requests.get(testUrl)
+            url = "https://www.basketball-reference.com/players/{}/{}{}/gamelog/{}".format(components[0], components[1], num, year)
+            response = requests.get(url)
             soup = BeautifulSoup(response.text, 'html.parser')
             header = soup.h1.text
             headerText = header[1:-1]
@@ -30,13 +30,11 @@ def getUrl(year, player):
             firstName = headerComponents[0].lower()
             lastName = headerComponents[1].lower()
             if(firstName == playerName[0] and lastName == playerName[1]):
-                url = testUrl
-                break
+                print(url)
+                return soup
     except:
         print("Could not find player")
         exit()
-    return url
 
-url = getUrl(year, player)
-print(url)
+soup = getUrl(year, player)
 

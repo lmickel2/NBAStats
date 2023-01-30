@@ -5,39 +5,42 @@ import pandas as pd
 import sys
 #sys.tracebacklimit = 0
 
-while True:
-    year=input("Which NBA season are you interested in?: ")
-    if (year.isdigit() == True and (len(year) == 4)):
-        currentyear = int(year)
-        if ((currentyear <= datetime.now().year and currentyear >= 1946)):
-            for i in range(4):
-                player=input("For which player do you want to get stats?: ").lower()
-                if (all(x.isalpha() or x.isspace() for x in player)) and " " in player:
-                    break
-                elif (all(x.isalpha() for x in player)):
-                    print("Are you typing only a first or last name? Or did you forget to add a space between the two?")
-                    NameRes = input("Type 'First' for first name. Type 'Last' for last name, or 'Try again' if you forgot a space or know the part of the name you're missing.").lower()
-                    print(NameRes)
-                    if NameRes == "first":
-                        print(player)
-                        url = "https://www.statmuse.com/nba/ask/{}".format(player)
-                        print(url)
-                        response = requests.get(url)
-                        soup = BeautifulSoup(response.text, 'html.parser')
-                        check = soup.findAll("td", attrs={"class":"text-left px-2 py-1 sticky left-0 bg-white"})
-                        print(check)
-                        for names in check:
-                            print("Did you mean?", names.find("a".text))
-                if i == 3:
-                    print("Either the player you are looking for does not exist in this database, or you are misspelling their name.")
-                    exit()
+def getYear():
+    while True:
+        year=input("Which NBA season are you interested in?: ")
+        if (year.isdigit() == True and (len(year) == 4)):
+            currentyear = int(year)
+            if ((currentyear <= datetime.now().year and currentyear >= 1946)):
+                return year
+            else:
+                print("The year you input was invalid. Try again.")
+                continue
         else:
             print("The year you input was invalid. Try again.")
             continue
-    else:
-        print("The year you input was invalid. Try again.")
-        continue
-    break
+
+def getPlayerName():
+    for i in range(4):
+        player=input("For which player do you want to get stats?: ").lower()
+        if (all(x.isalpha() or x.isspace() for x in player)) and " " in player:
+            return player
+        elif (all(x.isalpha() for x in player)):
+            print("Are you typing only a first or last name? Or did you forget to add a space between the two?")
+            NameRes = input("Type 'First' for first name. Type 'Last' for last name, or 'Try again' if you forgot a space or know the part of the name you're missing.").lower()
+            print(NameRes)
+            if NameRes == "first":
+                print(player)
+                url = "https://www.statmuse.com/nba/ask/{}".format(player)
+                print(url)
+                response = requests.get(url)
+                soup = BeautifulSoup(response.text, 'html.parser')
+                check = soup.findAll("td", attrs={"class":"text-left px-2 py-1 sticky left-0 bg-white"})
+                print(check)
+                for names in check:
+                    print("Did you mean?", names.find("a".text))
+        if i == 3:
+            print("Either the player you are looking for does not exist in this database, or you are misspelling their name.")
+            exit()
 
 # Takes players name splits into parts that go into the url
 def getUrlComponents(player):
@@ -66,11 +69,15 @@ def getUrl(year, player):
             lastName = headerComponents[1].lower()
             if(firstName == playerName[0] and lastName == playerName[1]):
                 print("All stats pulled from: ", url)
-                return soup
+                return url
     except:
         print("Could not find player")
         exit()
 
-soup = getUrl(year, player)
-#table = soup.findAll("table")
-#print(table)
+year = getYear()
+player = getPlayerName()
+url = getUrl(year, player)
+df = pd.read_html(url)
+playerStats = df[7]
+points = playerStats["PTS"]
+print(points)

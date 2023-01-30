@@ -74,10 +74,30 @@ def getUrl(year, player):
         print("Could not find player")
         exit()
 
+def getStatChoice():
+    while True:
+        statChoice = input("Which stat would you like to see (all, points, rebounds, assists): ").lower()
+        if(statChoice == "all" or statChoice == "points" or statChoice == "rebounds"
+            or statChoice == "assists"):
+            return statChoice
+        else:
+            print("Invalid stat choice please try again. ")
+
+def printPlayerStats(df):
+    stat = getStatChoice()
+    statsDictionary = {
+        "assists": "AST",
+        "points": "PTS",
+        "rebounds": "TRB"
+    }
+    if(stat == "all"):
+        print(df)
+    else:
+        print(df[statsDictionary[stat]])
+
 year = getYear()
 player = getPlayerName()
 url = getUrl(year, player)
 df = pd.read_html(url)
 playerStats = df[7]
-points = playerStats["PTS"]
-print(points)
+printPlayerStats(playerStats)
